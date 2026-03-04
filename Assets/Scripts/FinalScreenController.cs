@@ -7,22 +7,27 @@ public class FinalScreenController : MonoBehaviour
     public TMP_Text finalScoreText;
     public TMP_Text titleText;
 
-    public void Start()
-    {
-        // Mostra score final
-        if (finalScoreText != null && GameManager.Instance != null)
+    void Start()
         {
-            // como score é privado no GameManager, a solução simples é:
-            // colocar um getter público (vou te mostrar já já)
-            finalScoreText.text = "Score: " + GameManager.Instance.GetScore();
-        }
+            if (GameManager.Instance != null)
+            {
+                
+                if (finalScoreText != null)
+                    finalScoreText.text = "Score: " + GameManager.Instance.GetScore();
 
-        // Se quiser diferenciar vitória/derrota, depois fazemos com um "estado"
-        if (titleText != null)
-        {
-            titleText.text = "FIM DE JOGO";
+                
+                if (titleText != null)
+                {
+                    var state = GameManager.Instance.GetEndState();
+                    if (state == GameManager.EndState.Win)
+                        titleText.text = "VOCÊ VENCEU!";
+                    else if (state == GameManager.EndState.Lose)
+                        titleText.text = "GAME OVER, VOCÊ PERDEUUU!!";
+                    else
+                        titleText.text = "FIM";
+                }
+            }
         }
-    }
 
     public void Restart()
     {

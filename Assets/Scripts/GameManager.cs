@@ -6,11 +6,13 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public enum EndState { None, Win, Lose }
+
     [Header("Configuração")]
     public int vidasIniciais = 3;
     public int pontosPorBrick = 100;
 
-    // UI (será re-ligado automaticamente quando trocar de cena)
+
     private TMP_Text scoreText;
     private TMP_Text livesText;
 
@@ -18,8 +20,11 @@ public class GameManager : MonoBehaviour
     private int vidas;
     private int bricksRestantes;
 
-    // quando voltar do menu/tela final e entrar na Fase1, reseta score/vidas
+   
     private bool resetPending = true;
+
+    
+    private EndState endState = EndState.None;
 
     void Awake()
     {
@@ -42,39 +47,40 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Religa HUD quando entrar em fases
+        
         if (scene.name == "Fase1" || scene.name == "Fase2")
         {
-            BindHUDByName();     // encontra ScoreText e LivesText pela Hierarchy
-            RecountBricks();     // conta bricks destrutíveis dessa fase
+            BindHUDByName();     
+            RecountBricks();     
 
+            
             if (scene.name == "Fase1" && resetPending)
             {
-                // reset de uma nova "run" (menu/restart)
                 score = 0;
                 vidas = vidasIniciais;
                 resetPending = false;
+                endState = EndState.None;
             }
 
             AtualizarUI();
         }
         else
         {
-            // MenuInicial ou TelaFinal -> não precisa de HUD
+            
             scoreText = null;
             livesText = null;
         }
     }
 
-    // Chame isso antes de carregar a Fase1 a partir do Menu ou Reiniciar
+    
     public void QueueReset()
     {
         resetPending = true;
+        endState = EndState.None;
     }
 
     void BindHUDByName()
     {
-        // Procura qualquer TMP_Text carregado e pega pelos nomes
         TMP_Text[] texts = FindObjectsByType<TMP_Text>(FindObjectsSortMode.None);
         scoreText = null;
         livesText = null;
@@ -94,7 +100,7 @@ public class GameManager : MonoBehaviour
         foreach (GameObject b in bricks)
         {
             Brick br = b.GetComponent<Brick>();
-            // conta apenas os destrutíveis
+            
             if (br == null || br.type != BrickType.Indestructible)
                 bricksRestantes++;
         }
@@ -140,16 +146,24 @@ public class GameManager : MonoBehaviour
         string cena = SceneManager.GetActiveScene().name;
 
         if (cena == "Fase1")
+        {
             SceneManager.LoadScene("Fase2");
+        }
         else
+        {
+            endState = EndState.Win;
             SceneManager.LoadScene("TelaFinal");
+        }
     }
 
     void GameOver()
     {
+        endState = EndState.Lose;
         SceneManager.LoadScene("TelaFinal");
     }
 
+    
     public int GetScore() => score;
     public int GetLives() => vidas;
+    public EndState GetEndState() => endState;
 }

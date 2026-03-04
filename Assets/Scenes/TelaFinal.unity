@@ -980,7 +980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalScreenController
   finalScoreText: {fileID: 319260723}
-  titleText: {fileID: 0}
+  titleText: {fileID: 971433453}
 --- !u!4 &995380861
 Transform:
   m_ObjectHideFlags: 0

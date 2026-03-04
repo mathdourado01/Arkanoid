@@ -10,7 +10,7 @@ public class BallController : MonoBehaviour
 
     private Vector2 offset;
 
-    // DeadZone
+    
     private Collider2D deadZoneCol;
     private float deadZoneTopY;
     private bool deadzoneLock = false;
@@ -28,7 +28,7 @@ public class BallController : MonoBehaviour
         if (paddle != null)
             offset = (Vector2)transform.position - (Vector2)paddle.position;
 
-        // acha a deadzone por tag e salva o topo dela
+        
         GameObject dz = GameObject.FindGameObjectWithTag("DeadZone");
         if (dz != null)
         {
@@ -42,7 +42,7 @@ public class BallController : MonoBehaviour
 
     void Update()
     {
-        // bola colada no paddle antes de lançar
+        
         if (!launched && paddle != null)
         {
             rb.position = (Vector2)paddle.position + offset;
@@ -54,7 +54,7 @@ public class BallController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // fallback: se passar do topo da deadzone, conta como queda
+        
         if (launched && !deadzoneLock && deadZoneCol != null)
         {
             if (rb.position.y <= deadZoneTopY)
@@ -96,33 +96,33 @@ public class BallController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // BRICKS (normal, roxo, cinza)
+        
         if (collision.gameObject.CompareTag("Brick"))
         {
             Brick brick = collision.gameObject.GetComponent<Brick>();
 
-            // Cinza: indestrutível
+            
             if (brick != null && brick.type == BrickType.Indestructible)
             {
-                // não destrói, só quica (física)
+                
                 return;
             }
 
-            // Roxo: ganha 1 vida e destrói
+            
             if (brick != null && brick.type == BrickType.ExtraLife)
             {
                 if (GameManager.Instance != null)
                     GameManager.Instance.GanharVida(1);
             }
 
-            // Normal e Roxo quebram
+            
             Destroy(collision.gameObject);
 
             if (GameManager.Instance != null)
                 GameManager.Instance.BrickDestruido();
         }
 
-        // mantém velocidade constante e evita ficar muito reta
+        
         if (launched)
         {
             Vector2 v = rb.linearVelocity;
